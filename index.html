@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="计算巢是阿里云开放给企业应用服务商的服务管理平台。服务商能够在计算巢上发布私有化部署服务，为其客户提供云上软件一键部署的能力；同时也支持全托管模式的服务，赋能服务商托管其客户资源。">
+  <title>GBase云数仓GCDW实例部署文档 - Aliyun 计算巢 x GBase</title>
+
+  <link rel="shortcut icon" href="img/favicon.ico">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+  <link rel="stylesheet" href="css/theme.css">
+  
+
+  
+
+  
+  
+
+  
+    <script src="search/main.js"></script>
+  
+
+  
+
+  <script src="js/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="nav-inner">
+        <div class="logo">
+          <img src="./img/logo-2x.png">
+        </div>
+        <div class="nav-list">
+          <ul>
+          
+              <li><a href="#gbasegcdw">GBase云数仓GCDW实例部署文档</a></li>
+              
+                  <li><a href="#_1">概述</a></li>
+                  
+              
+                  <li><a href="#_2">计费说明</a></li>
+                  
+              
+                  <li><a href="#_3">部署架构</a></li>
+                  
+              
+                  <li><a href="#ram">RAM账号所需权限</a></li>
+                  
+              
+                  <li><a href="#_4">部署流程</a></li>
+                  
+                      <li class="li-h3"><a href="#_5">部署步骤</a></li>
+                  
+                      <li class="li-h3"><a href="#_6">部署参数说明</a></li>
+                  
+                      <li class="li-h3"><a href="#_7">验证结果</a></li>
+                  
+              
+                  <li><a href="#_8">问题排查</a></li>
+                  
+              
+                  <li><a href="#_9">联系我们</a></li>
+                  
+              
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="content theme-github">
+      
+      <div class="content-inner">        
+        
+        <h1 id="gbasegcdw">GBase云数仓GCDW实例部署文档</h1>
+<blockquote>
+<p><strong>免责声明：</strong>本文档可能包含第三方产品信息，该信息仅供参考。阿里云对第三方产品的性能、可靠性以及操作可能带来的潜在影响，不做任何暗示或其他形式的承诺。</p>
+</blockquote>
+<h2 id="_1">概述</h2>
+<p>GBase Cloud Data Warehouse（简称GCDW）是一款云原生的数据仓库产品，是GBASE南大通用自主研发的一款基于列存储的分布式大规模并行处理的多实例弹性云数据仓库，适用于分析类型的大数据平台、综合性BI系统、数据仓库和集市系统的云上系统。GCDW既支持本地部署（也支持云上部署，具备弹性资源扩展能力，用户可以根据自身的需要随时弹性扩展计算单元或者存储单元。存算分离架构，支持计算资源和存储资源的无限独立扩展，用户可以根据实际业务需要单独规划、管理计算资源和存储资源。GCDW在云上提供SaaS能力，为客户提供企业级弹性数据仓库系统，让用户能够在云中更轻松地设置、操作，满足用户云环境下数据仓库需求。云用户可以通过SaaS服务界面直接使用GCDW建库、建表、加载数据和查询分析等，也可以通过使用GBASE提供的C API、JDBC、ODBC、ADO.NET接口驱动使用GCDW。</p>
+<p>GBase云数仓提供物理机部署版本和K8s部署版本，二者的区别在于物理机部署版本不具备资源弹性和多个虚拟数仓功能；K8s部署版本具备资源弹性和多个虚拟数仓能力。当前在阿里云上提供的GBase云数仓是物理机部署版本，免费提供给用户使用，用户在使用时仅需要支付阿里云的资源使用费即可享受GBase云数仓软件给您带来的高性能的数据仓库处理能力。</p>
+<p>该服务采用阿里云计算巢的私有部署服务方式，方便用户在阿里云上创建部署GBase云数仓实例。本服务支持一键部署，您在部署本服务前需要首先开通阿里云的对象存储OSS功能，创建用于访问对象存储OSS的AccessKey ID和AccessKey Secret，具备在OSS创建存储桶、向存储桶上传数据和下载数据的能力。GBase云数仓软件采用计算和存储分离架构，在向您提供数据仓库功能时需要将数据持久化存储在OSS的存储桶中，您在成功部署GBase云数仓系统后，请不要删除部署GBase云数仓过程中自动创建的存储桶，否则您的数据仓库数据将会丢失。如果您确定不再使用GBase云数仓系统，则首先删除部署GBase云数仓过程中自动创建的存储桶，然后再删除GBase云数仓实例。</p>
+<h2 id="_2">计费说明</h2>
+<p>目前，GBase云数仓GCDW在计算巢上不收取软件费用，用户可以进行免费试用。如果您采用正式创建的方式部署实例，则需要您向阿里云支付云计算资源费用。</p>
+<ul>
+<li>所选vCPU与内存规格</li>
+<li>系统盘类型及容量</li>
+<li>公网带宽</li>
+</ul>
+<h2 id="_3">部署架构</h2>
+<p>参见主页描述。</p>
+<h2 id="ram">RAM账号所需权限</h2>
+<p>TuGraph服务需要对ECS、VPC等资源进行访问和创建操作，若您使用RAM用户创建服务实例，需要在创建服务实例前，对使用的RAM用户的账号添加相应资源的权限。添加RAM权限的详细操作，请参见<a href="https://help.aliyun.com/document_detail/121945.html">为RAM用户授权</a>。所需权限如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th>权限策略名称</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AliyunECSFullAccess</td>
+<td>管理云服务器服务（ECS）的权限</td>
+</tr>
+<tr>
+<td>AliyunVPCFullAccess</td>
+<td>管理专有网络（VPC）的权限</td>
+</tr>
+<tr>
+<td>AliyunROSFullAccess</td>
+<td>管理资源编排服务（ROS）的权限</td>
+</tr>
+<tr>
+<td>AliyunComputeNestUserFullAccess</td>
+<td>管理计算巢服务（ComputeNest）的用户侧权限</td>
+</tr>
+<tr>
+<td>AliyunCloudMonitorFullAccess</td>
+<td>管理云监控（CloudMonitor）的权限</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">部署流程</h2>
+<h3 id="_5">部署步骤</h3>
+<p>单击GBase云数仓产品页的“免费试用”或者“正式创建”，进入服务实例部署界面，根据界面提示，填写参数完成部署。</p>
+<h3 id="_6">部署参数说明</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>服务实例名称</td>
+<td>为您的GBase云数仓服务实例命名，该名称长度不超过64个字符，必须以英文字母开头，可包含数字、英文字母、短划线（-）和下划线（_）。</td>
+</tr>
+<tr>
+<td>地域</td>
+<td>选择您的服务实例部署的位置</td>
+</tr>
+<tr>
+<td>付费类型</td>
+<td>选择云主机的付费类型</td>
+</tr>
+<tr>
+<td>规格类型</td>
+<td>GBase云数仓服务实例包括4种不同用途云主机部署元数据服务、协调器服务、数据仓库的计算节点服务器和控制面板服务器，需要您为4种云主机选择规格类型，其中数据仓库的计算节点服务器主要用于执行数据仓库的计算任务，为了获取更高的计算性能可以选取内存较大的云主机，其他服务器在测试中可以选择默认配置。</td>
+</tr>
+<tr>
+<td>基础配置</td>
+<td>选择交换机所在的区域、专有网络VPC实例和交换机实例。如果用户已经创建过则直接选择即可，否则可以首先在阿里云上创建专有网络VPC实例和交换机实例。</td>
+</tr>
+<tr>
+<td>对象存储（OSS）</td>
+<td>需要用户在阿里云的对象存储OSS中创建账号和创建一个存储桶用于存储用户数据，然后按照部署页面提示选择存储桶、访问对象存储OSS的AccessKey ID和AccessKey Secret。如果输入错误的AccessKey ID或者AccessKey Secret，会导致部署GBase云数仓服务实例失败。</td>
+</tr>
+<tr>
+<td>拓扑信息</td>
+<td>GBase云数仓服务实例由元数据服务、协调服务、数据仓库的计算服务和控制面板Web服务构成，元数据服务是一个集群，3个节点以上具备高可用特性，如果您只是简单测试则可以选择1个节点即可；协调服务是一个集群，GBase云数仓服务实例的访问入口，负责协调调度任务，您可以选择2个或者2个以上的节点用于应用系统访问数据库；数据仓库的计算服务也是一个集群，您可以选择1~128个节点，GBase云数仓的计算服务是MPP架构，节点数越多，并行计算的性能越高；控制面板Web服务仅需一个节点，无需选择。</td>
+</tr>
+<tr>
+<td>集群信息</td>
+<td>集群信息用于访问GBase云数仓服务以及访问部署服务的云主机。租户名称用于在系统中唯一识别租户，GBase云数仓是一个多租系统，每个GBase云数仓服务实例独享租户资源；数据库根用户名称和数据库根用户密码用于登录GBase云数仓系统；ECS登录密码用于登录云主机操作系统；系统盘空间将为数据仓库的计算节点配置数据缓存空间，默认40G，您可以根据数据量的大小适量调小或者调大该配置值。</td>
+</tr>
+<tr>
+<td>权限确认</td>
+<td>在必要的时候，方便GBase协助您排查和解决使用过程中遇到的数据库问题，需要您开通代运维服务。在您开通该服务以后，GBase运维人员可以远程访问您的云主机资源排查和解决问题；在部署GBase云数仓服务成功以后，您可以根据需要关闭或者打开代运维服务。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">验证结果</h3>
+<p>Web图形化操作界面使用GBase云数仓系统：部署完成以后，查看部署实例的“概览”页面，在“DashboardAddress”标签栏获取Web登录的访问链接，然后打开链接，在节目上选择“中文”并输入租户名、数据库访问用户名和密码后，登录Web控制台使用GBase云数仓系统，包括创建DB、表和视图，以及插入表数据、查询表数据和导入数据到表等数据仓库操作。</p>
+<h2 id="_8">问题排查</h2>
+<p>应用系统通过接口驱动使用GBase云数仓系统：部署完成以后，查看部署实例的“概览”页面，在“CoordinatorAddress”标签栏获取用于通过公网访问GBase云数仓的IP地址列表，应用系统通过使用GBase提供的JDBC、ODBC或C API接口在公网上访问和使用GBase云数仓系统。用户可以联系南大通用的技术服务人员获取上述接口驱动。</p>
+<h2 id="_9">联系我们</h2>
+<p>请通过下面的联系方式联系GBase的售后服务人员现场支持。</p>
+<ul>
+<li>联系电话：022-58815678</li>
+<li>技术支持热线：400-013-9696</li>
+</ul>
+        
+      </div>
+
+      <div class="copyrights">© 2009-2022 Aliyun.com 版权所有</div>
+    </div>
+  </div>
+  
+  <!--
+  MkDocs version      : 1.5.3
+  Docs Build Date UTC : 2023-11-09 11:51:04.151105+00:00
+  -->
+</body>
+</html>
